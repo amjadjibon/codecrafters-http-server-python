@@ -1,7 +1,7 @@
 import socket
 
 from app.request import HttpRequest
-from app.response import status_ok, not_found, echo
+from app.response import status_ok, not_found, echo, user_agent
 
 def handle_connection(conn, addr):
     print("connected to", addr)
@@ -12,6 +12,8 @@ def handle_connection(conn, addr):
         response = status_ok()
     elif http_request.path.startswith('/echo/'):
         response = echo(http_request)
+    elif http_request.path == '/user-agent':
+        response = user_agent(http_request)
     else:
         response = not_found()
     
