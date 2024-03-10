@@ -16,3 +16,17 @@ def user_agent(request: HttpRequest):
     body = request.headers.get('User-Agent', 'unknown')
     content_type = 'text/plain'
     return f"HTTP/1.1 200 OK\r\nContent-Type: {content_type}\r\nContent-Length: {len(body)}\r\n\r\n{body}".encode('utf-8')
+
+def file(request: HttpRequest, directory: str):
+    path = request.path.lstrip('/files/')
+    if request.method == 'GET':
+        try:
+            with open(f'{directory}/{path}', 'rb') as f:
+                body = str(f.read(), 'utf-8')
+                content_type = 'application/octet-stream'
+                return f"HTTP/1.1 200 OK\r\nContent-Type: {content_type}\r\nContent-Length: {len(body)}\r\n\r\n{body}".encode('utf-8')
+        except FileNotFoundError:
+            return not_found()
+    else:
+        return b"HTTP/1.1 405 Method Not Allowed\r\n\r\n"
+    
