@@ -1,19 +1,20 @@
 import socket
 
 from app.request import HttpRequest
+from app.response import status_ok, not_found, echo
 
 def handle_connection(conn, addr):
     print("connected to", addr)
     
     http_request = HttpRequest.parse_request(conn.recv(1024))
-    method = http_request.method
     
-    router = {
-        f'{method} /': b"HTTP/1.1 200 OK\r\n\r\n",
-    }
+    if http_request.path == '/':
+        response = status_ok()
+    elif http_request.path.startswith('/echo/'):
+        response = echo(http_request)
+    else:
+        response = not_found()
     
-    
-    response = router.get(f'{method} {http_request.url}', b"HTTP/1.1 404 Not Found\r\n\r\n")
     conn.sendall(response)
     conn.close()
 
