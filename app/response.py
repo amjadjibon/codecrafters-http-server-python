@@ -27,6 +27,10 @@ def file(request: HttpRequest, directory: str):
                 return f"HTTP/1.1 200 OK\r\nContent-Type: {content_type}\r\nContent-Length: {len(body)}\r\n\r\n{body}".encode('utf-8')
         except FileNotFoundError:
             return not_found()
+    elif request.method == 'POST':
+        with open(f'{directory}/{path}', 'wb') as f:
+            f.write(request.body)
+            return b'HTTP/1.1 201 OK\r\n\r\n'
     else:
         return b"HTTP/1.1 405 Method Not Allowed\r\n\r\n"
     
