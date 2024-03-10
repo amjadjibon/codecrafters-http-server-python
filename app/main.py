@@ -1,4 +1,5 @@
 import socket
+import threading
 
 from app.request import HttpRequest
 from app.response import status_ok, not_found, echo, user_agent
@@ -30,7 +31,8 @@ def main():
     while True:
         print("waiting for a connection...")
         conn, addr = server_socket.accept()
-        handle_connection(conn, addr)
+        thread = threading.Thread(target=handle_connection, args=(conn, addr))
+        thread.start()
 
 
 if __name__ == "__main__":
